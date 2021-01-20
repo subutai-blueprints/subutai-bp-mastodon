@@ -1,0 +1,107 @@
+{
+    "name": "${environmentName}",
+    "description": "Mastodon",
+    "version": "4.0.0",
+    "author": "https://github.com/lbthomsen",
+    "containers": [
+        {
+            "hostname": "${webContainerName}",
+            "template": "debian-buster",
+            "peer-criteria": "HTTP-GROUP",
+            "size": "${containerSize}",
+            "port-mapping": [
+                {
+                    "protocol": "https",
+                    "domain": "${domainName}",
+                    "internal-port": "80",
+                    "external-port": "443"
+                }
+            ]
+        }
+    ],
+    "peer-criteria": [
+        {
+            "name": "HTTP-GROUP"
+        }
+    ],
+    "ansible-configuration": {
+        "source-url": "https://github.com/lbthomsen/subutai-bp-mastodon/archive/master.zip",
+        "ansible-playbook": "site.yml",
+        "extra-vars": [
+            {
+                "key": "site_title",
+                "value": "${siteTitle}"
+            }, 
+            {
+                "key": "site_description",
+                "value": "${siteDescription}"
+            }, 
+            {
+                "key": "domain_name",
+                "value": "${domainName}"
+            }, 
+            {
+                "key": "admin_user",
+                "value": "${adminUser}"
+            }, 
+            {
+                "key": "admin_pwd",
+                "value": "${adminPwd}"
+            }
+        ],
+        "groups": [
+            {
+                "name": "mastodon",
+                "hostnames": [
+                    "${webContainerName}"
+                ]
+            }
+        ]
+    },
+    "user-variables": {
+        "environmentName": {
+            "description": "Enter the environment name",
+            "type": "string",
+            "default": "wp",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "domainName": {
+            "description": "Enter the application domain name",
+            "type": "domain",
+            "default": "change.the.domain",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "siteTitle": {
+            "description": "Enter the site's title",
+            "type": "string",
+            "default": "title"
+        },
+        "siteDescription": {
+            "description": "Enter the site's description/tagline",
+            "type": "string",
+            "default": "description"
+        },
+        "adminUser": {
+            "description": "Site administrator user",
+            "type": "string",
+            "default": "admin"
+        },
+        "adminPwd": {
+            "description": "Site administrator password",
+            "type": "string",
+            "default": "admin"
+        },
+        "webContainerName": {
+            "description": "Enter the container's hostname",
+            "type": "string",
+            "default": "wp",
+            "validation": "[a-zA-Z0-9]+"
+        },
+        "containerSize": {
+            "description": "Container Size",
+            "type": "enum",
+            "default": "TINY",
+            "validation": "TINY,SMALL,MEDIUM,LARGE,HUGE"
+        }
+    }
+}
