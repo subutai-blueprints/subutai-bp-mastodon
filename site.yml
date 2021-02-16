@@ -1,4 +1,7 @@
 # Ansible Playbook for Subutai WordPress blueprint
+#
+# As per: https://docs.joinmastodon.org/admin/install/
+#
 ---
 
 - hosts: mastodon
@@ -11,44 +14,181 @@
         update_cache: true
         upgrade: "yes"
 
+    - name: Install basic debs
+      apt:
+        name: 
+        - ca-certificates
+        state: present
+
+    - name: Add nodesource key
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+
+    - name: Add yarn key
+      apt_key:
+        url: https://dl.yarnpkg.com/debian/pubkey.gpg
+        state: present
+
+    - name: Add nodesource
+      apt_repository:
+        repo: deb https://deb.nodesource.com/node_14.x buster main
+        update_cache: yes
+        state: present
+
+    - name: Add yarn
+      apt_repository: 
+        repo: deb https://dl.yarnpkg.com/debian/ stable main
+        update_cache: yes
+        state: present
+
     - name: Install required debs
       apt:
         name: 
+        - aptitude
+        - curl
+        - wget
         - build-essential
         - imagemagick
         - ffmpeg
-#        - libpq-dev
-#        - libxml2-dev
-#        - libxslt1-dev
-#        - file git-core
-#        - g++
-#        - libprotobuf-dev
-#        - protobuf-compiler
-#        - pkg-config
-#        - nodejs
-#        - gcc
-#        - autoconf
-#        - bison
-#        - build-essential
-#        - libssl-dev
-#        - libyaml-dev
-#        - libreadline6-dev
-#        - zlib1g-dev
-#        - libncurses5-dev
-#        - libffi-dev
-#        - libgdbm-dev
-#        - nginx
-#        - redis-server
-#        - redis-tools
-#        - postgresql
-#        - postgresql-contrib
-#        - certbot
-#        - python-certbot-nginx
-#        - yarn
-#        - libidn11-dev
-#        - libicu-dev
-#        - libjemalloc-dev
+        - nodejs
+        - git
+        - sudo
+        - yarn
+        - rubygems
+        - redis-server
+        - redis-tools 
+        - postgresql
+        - postgresql-contrib
+        - openssl
+        - python-psycopg2
+        - libjemalloc-dev
+        - libpq-dev
+        - libxml2-dev
+        - libxslt1-dev
+        - libprotobuf-dev
+        - protobuf-compiler
+        - libssl-dev
+        - libyaml-dev
+        - libreadline6-dev
+        - zlib1g-dev
+        - libncurses5-dev
+        - libffi-dev
+        - libgdbm-dev
+        - libidn11-dev
+        - libicu-dev
         state: present
+
+    - name: Get rvm key
+      shell: gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+
+    - name: Get rvm_installer
+      get_url:
+        url: https://get.rvm.io
+        dest: /usr/local/bin/rvm_installer
+
+    - name: Make rvm_installer executable
+      file:
+        path: /usr/local/bin/rvm_installer
+        state: touch
+        mode: 0700
+
+    - name: Add mastodon user
+      user: 
+        name: mastodon
+        group: users
+        shell: /bin/bash
+
+    - name: Set ruby version
+      shell: ". /usr/local/rvm/scripts/rvm && /usr/local/rvm/bin/rvm install ruby-2.7.2"
+      args:
+        executable: /bin/bash
+
+    - name: Set ruby version
+      shell: ". /usr/local/rvm/scripts/rvm && /usr/local/rvm/bin/rvm install ruby-2.7.2"
+      args:
+        executable: /bin/bash
+      become: yes
+      become_user: mastodon
+
+    - name: Set default ruby version
+      shell: ". /usr/local/rvm/scripts/rvm && rvm --default use ruby-2.7.2"
+      args:
+        executable: /bin/bash
+
+    - name: Set default ruby version
+      shell: ". /usr/local/rvm/scripts/rvm && rvm --default use ruby-2.7.2"
+      args:
+        executable: /bin/bash
+      become: yes
+      become_user: mastodon
+
+    - name: Install bundle
+      gem:
+        name: bundle
+        state: present
+      become: yes
+      become_user: mastodon
+
+    - name: Create PostgreSQL mastodon user
+      postgresql_user:
+        name: mastodon
+        role_attr_flags: CREATEDB
+      become: true
+      become_user: postgres
+
+    - name: Clone mastodon
+      git:
+        repo: https://github.com/tootsuite/mastodon.git
+        dest: /home/mastodon/live
+      become: true
+      become_user: mastodon
+
+    - name: Switch to latest release
+      shell: git checkout $(git tag -l | grep -v 'rc[0-9]*$' | sort -V | tail -n 1)
+      args: 
+        chdir: /home/mastodon/live
+      become: true
+      become_user: mastodon
+
+    - name: Configure bundle deployment
+      shell: su - mastodon -c "cd live && bundle config deployment 'true'"
+      args: 
+        executable: /bin/bash
+
+    - name: Configure bundle without
+      shell: su - mastodon -c "cd live && bundle config without 'development test'" 
+      args: 
+        executable: /bin/bash
+
+    - name: Deploy Bundles
+      shell: su - mastodon -c "cd live && bundle install -j$(getconf _NPROCESSORS_ONLN)"
+      args: 
+        executable: /bin/bash
+
+    - name: Install dependencies with yarn
+      shell: su - mastodon -c "yarn install --pure-lockfile"
+      args:
+        executable: /bin/bash
+
+    - name: Copy env file
+      template:
+        src: files/env.production
+        dest: /home/mastodon/live/.env.production
+
+    - name: Compile assets
+      shell: su - mastodon -c "cd live && RAILS_ENV=production bundle exec rake assets:precompile"
+      args:
+        executable: /bin/bash
+
+    - name: Create database
+      shell: su - mastodon -c "cd live && RAILS_ENV=production bundle exec rake db:create"
+      args:
+        executable: /bin/bash
+
+# RAILS_ENV=production rails db:setup
+# RAILS_ENV=production rails assets:precompile
+
 
     # - name: Install limits.ini
     #   template: 
