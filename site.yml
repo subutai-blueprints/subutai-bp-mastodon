@@ -93,6 +93,9 @@
         state: touch
         mode: 0700
 
+    - name: Run rvm_installer
+      shell: /usr/local/bin/rvm_installer
+
     - name: Add mastodon user
       user: 
         name: mastodon
