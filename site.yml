@@ -54,6 +54,7 @@
         - nodejs
         - git
         - sudo
+        - nginx
         - yarn
         - rubygems
         - redis-server
@@ -61,6 +62,7 @@
         - postgresql
         - postgresql-contrib
         - openssl
+        - exim4
         - python-psycopg2
         - libjemalloc-dev
         - libpq-dev
@@ -78,6 +80,17 @@
         - libidn11-dev
         - libicu-dev
         state: present
+
+    - name: Fix redis service
+      template:
+        src: files/redis-server.service
+        dest: /lib/systemd/system
+
+    - name: Restart redis
+      systemd:
+        name: redis-server
+        state: restarted
+        daemon_reload: yes
 
     - name: Get rvm key
       shell: gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
@@ -188,6 +201,49 @@
       shell: su - mastodon -c "cd live && RAILS_ENV=production bundle exec rake db:create"
       args:
         executable: /bin/bash
+
+    - name: Create or migrate database
+      shell: su - mastodon -c "cd live && RAILS_ENV=production bundle exec rake db:migrate:setup"
+      args:
+        executable: /bin/bash
+
+    - name: Copy mastodon-sidekiq.service
+      template:
+        src: files/mastodon-sidekiq.service
+        dest: /lib/systemd/system/
+
+    - name: Copy mastodon-streaming.service
+      template:
+        src: files/mastodon-streaming.service
+        dest: /lib/systemd/system/
+
+    - name: Copy mastodon-web.service
+      template:
+        src: files/mastodon-web.service
+        dest: /lib/systemd/system/
+
+    - name: Enable mastodon services
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+        masked: no
+        daemon_reload: yes
+      with_items:
+          - mastodon-sidekiq
+          - mastodon-streaming
+          - mastodon-web
+
+    - name: Install nginx.config
+      template:
+        src: files/nginx.conf
+        dest: /etc/nginx/sites-available/default
+
+    - name: Restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+
 
 # RAILS_ENV=production rails db:setup
 # RAILS_ENV=production rails assets:precompile

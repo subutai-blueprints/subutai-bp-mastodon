@@ -1,0 +1,20 @@
+[Unit]
+Description=mastodon-sidekiq
+After=network.target
+
+[Service]
+Type=simple
+User=mastodon
+WorkingDirectory=/home/mastodon/live
+Environment="RAILS_ENV=production"
+Environment="DB_POOL=25"
+Environment="MALLOC_ARENA_MAX=2"
+Environment="PATH=/usr/local/rvm/gems/ruby-2.7.2/bin:/usr/local/rvm/gems/ruby-2.7.2@global/bin:/usr/local/rvm/rubies/ruby-2.7.2/bin:/usr/local/rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+Environment="IRBRC=/usr/local/rvm/rubies/ruby-2.7.2/.irbrc"
+Environment="rvm_path=/usr/local/rvm"
+ExecStart=/usr/local/rvm/rubies/ruby-2.7.2/bin/bundle exec sidekiq -c 25
+TimeoutSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
