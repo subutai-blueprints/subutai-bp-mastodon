@@ -5,7 +5,7 @@
     "author": "https://github.com/lbthomsen",
     "containers": [
         {
-            "hostname": "${webContainerName}",
+            "hostname": "mastodon",
             "template": "debian-buster",
             "peer-criteria": "HTTP-GROUP",
             "size": "${containerSize}",
@@ -37,7 +37,7 @@
             {
                 "name": "mastodon",
                 "hostnames": [
-                    "${webContainerName}"
+                    "mastodon"
                 ]
             }
         ]
@@ -46,7 +46,7 @@
         "environmentName": {
             "description": "Enter the environment name",
             "type": "string",
-            "default": "wp",
+            "default": "mastodon",
             "validation": "[a-zA-Z0-9]+"
         },
         "domainName": {
