@@ -13,7 +13,7 @@
                 {
                     "protocol": "https",
                     "domain": "${domainName}",
-                    "internal-port": "3000",
+                    "internal-port": "80",
                     "external-port": "443"
                 }
             ]
