@@ -43,7 +43,5 @@ cmd = "rails r #{temp.path}"
 info("Will exec '#{cmd}'")
 debug("With contents:\n" + `cat #{temp.path}`)
 
-`#{cmd}`
-
-
+`#{cmd}` unless $debug_mode
 
