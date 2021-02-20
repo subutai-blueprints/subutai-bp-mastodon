@@ -1,7 +1,7 @@
 {
     "name": "${environmentName}",
     "description": "Mastodon",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": "https://github.com/lbthomsen",
     "containers": [
         {
@@ -31,6 +31,14 @@
             {
                 "key": "domain_name",
                 "value": "${domainName}"
+            }, 
+            {
+                "key": "admin_user",
+                "value": "${adminUser}"
+            }, 
+            {
+                "key": "admin_email",
+                "value": "${adminEmail}"
             }
         ],
         "groups": [
@@ -55,6 +63,18 @@
             "default": "change.the.domain",
             "validation": "[a-zA-Z0-9]+"
         },
+        "adminUser": {
+            "description": "Enter the owner user",
+            "type": "string",
+            "default": "admin",
+            "validation": "[a-zA-Z0-9]+"
+        }, 
+        "adminEmail": {
+            "description": "Enter the owner email (must work!)",
+            "type": "string",
+            "default": "admin",
+            "validation": "[a-zA-Z0-9]+"
+        }, 
         "containerSize": {
             "description": "Container Size",
             "type": "enum",
