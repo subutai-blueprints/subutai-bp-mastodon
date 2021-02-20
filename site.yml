@@ -278,4 +278,14 @@
       become: yes
       become_user: mastodon
 
+    - name: Create admin user
+      shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/tootctl accounts create {{admin_user}} --email {{admin_email}} --role=admin --confirmed"
+      args:
+        executable: /bin/bash
+
+    #- name: Reset admin password
+    #  shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/tootctl accounts modify {{admin_user}} --reset-password"
+    #  args:
+    #    executable: /bin/bash
+
 # vim: ts=2 et nowrap autoindent
