@@ -12,7 +12,7 @@ On the login screen click on the link "Trouble logging in".
 
 2. Reset Password
 
-![Reset Password](https://github.com/lbthomsen/subutai-bp-mastodon/raw/master/doc/login.png)
+![Reset Password](https://github.com/lbthomsen/subutai-bp-mastodon/raw/master/doc/reset.png)
 
 On the Reset Password page, fill in the same email you used when creating the Mastodon environment.
 
