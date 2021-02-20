@@ -73,7 +73,7 @@
             "description": "Enter the owner email (must work!)",
             "type": "string",
             "default": "admin",
-            "validation": "[a-zA-Z0-9]+"
+            "validation": "[a-zA-Z0-9@]+"
         }, 
         "containerSize": {
             "description": "Container Size",
