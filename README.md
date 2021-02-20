@@ -8,3 +8,19 @@ for the first time user to "reset" the password.
 
 ![Login Screen](https://github.com/lbthomsen/subutai-bp-mastodon/raw/master/doc/login.png)
 
+On the login screen click on the link "Trouble logging in".
+
+2. Reset Password
+
+![Reset Password](https://github.com/lbthomsen/subutai-bp-mastodon/raw/master/doc/login.png)
+
+On the Reset Password page, fill in the same email you used when creating the Mastodon environment.
+
+3. Check email
+
+You should now have received an email:
+
+![Reset Password Email](https://github.com/lbthomsen/subutai-bp-mastodon/raw/master/doc/email.png)
+
+Click on the button.
+
