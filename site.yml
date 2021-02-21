@@ -175,6 +175,7 @@
       git:
         repo: https://github.com/tootsuite/mastodon.git
         dest: /home/mastodon/live
+        version: stable-3.2
       become: true
       become_user: mastodon
 
@@ -190,7 +191,7 @@
       args: 
         executable: /bin/bash
 
-    - name: Configure bundle without
+    - name: Configure bundle without development
       shell: su - mastodon -c "cd live && bundle config without 'development test'" 
       args: 
         executable: /bin/bash
@@ -283,9 +284,17 @@
       args:
         executable: /bin/bash
 
-    #- name: Reset admin password
-    #  shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/tootctl accounts modify {{admin_user}} --reset-password"
-    #  args:
-    #    executable: /bin/bash
+    - name: Create setuserpwd
+      template:
+        src: files/setuserpwd
+        dest: /home/mastodon/live/bin/setuserpwd
+        mode: "0777"
+      become: yes
+      become_user: mastodon
+
+    - name: Set admin password
+      shell: su - mastodon -c "RAILS_ENV=production /home/mastodon/live/bin/setuserpwd {{admin_user}} {{admin_pwd}}"
+      args:
+        executable: /bin/bash
 
 # vim: ts=2 et nowrap autoindent
