@@ -39,7 +39,7 @@ temp << "exit\n"
 temp << "\n"
 temp.flush
 
-cmd = "rails r #{temp.path}"
+cmd = "/home/mastodon/live/bin/rails r #{temp.path}"
 info("Will exec '#{cmd}'")
 debug("With contents:\n" + `cat #{temp.path}`)
 

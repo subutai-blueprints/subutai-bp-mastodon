@@ -191,7 +191,7 @@
       args: 
         executable: /bin/bash
 
-    - name: Configure bundle without
+    - name: Configure bundle without development
       shell: su - mastodon -c "cd live && bundle config without 'development test'" 
       args: 
         executable: /bin/bash
