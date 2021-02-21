@@ -175,6 +175,7 @@
       git:
         repo: https://github.com/tootsuite/mastodon.git
         dest: /home/mastodon/live
+        version: stable-3.2
       become: true
       become_user: mastodon
 
@@ -292,7 +293,7 @@
       become_user: mastodon
 
     - name: Set admin password
-      shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/setuserpwd {{admin_user}} {{admin_pwd}}"
+      shell: su - mastodon -c "RAILS_ENV=production /home/mastodon/live/bin/setuserpwd {{admin_user}} {{admin_pwd}}"
       args:
         executable: /bin/bash
 
