@@ -283,9 +283,17 @@
       args:
         executable: /bin/bash
 
-    #- name: Reset admin password
-    #  shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/tootctl accounts modify {{admin_user}} --reset-password"
-    #  args:
-    #    executable: /bin/bash
+    - name: Create setuserpwd
+      template:
+        src: files/setuserpwd
+        dest: /home/mastodon/live/bin/setuserpwd
+        mode: "0777"
+      become: yes
+      become_user: mastodon
+
+    - name: Set admin password
+      shell: su - mastodon -c "RAILS_ENV=production ~/live/bin/setuserpwd {{admin_user}} {{admin_pwd}}"
+      args:
+        executable: /bin/bash
 
 # vim: ts=2 et nowrap autoindent
