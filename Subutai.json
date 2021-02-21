@@ -1,7 +1,7 @@
 {
     "name": "${environmentName}",
     "description": "Mastodon",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "author": "https://github.com/lbthomsen",
     "containers": [
         {
@@ -70,19 +70,19 @@
         "adminUser": {
             "description": "Enter the owner user",
             "type": "string",
-            "default": "admin",
+            "default": "owner.user.id",
             "validation": "[a-zA-Z0-9]+"
         }, 
         "adminEmail": {
             "description": "Enter the owner email (must work!)",
             "type": "string",
-            "default": "admin",
+            "default": "owner.email.address",
             "validation": ".+"
         }, 
         "adminPwd": {
             "description": "Enter the owner password",
             "type": "string",
-            "default": "admin",
+            "default": "owner.password",
             "validation": ".+"
         }, 
         "containerSize": {
